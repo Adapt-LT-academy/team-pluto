@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\Ferries;
+use App\Entity\Ferry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
- * @method Ferries|null find($id, $lockMode = null, $lockVersion = null)
- * @method Ferries|null findOneBy(array $criteria, array $orderBy = null)
- * @method Ferries[]    findAll()
- * @method Ferries[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Ferry|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Ferry|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Ferry[]    findAll()
+ * @method Ferry[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class FerriesRepository extends ServiceEntityRepository
+class FerryRepository extends ServiceEntityRepository
 {
     public function __construct(RegistryInterface $registry)
     {
-        parent::__construct($registry, Ferries::class);
+        parent::__construct($registry, Ferry::class);
     }
 
 //    /**
-//     * @return Ferries[] Returns an array of Ferries objects
+//     * @return Ferry[] Returns an array of Ferry objects
 //     */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class FerriesRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?Ferries
+    public function findOneBySomeField($value): ?Ferry
     {
         return $this->createQueryBuilder('f')
             ->andWhere('f.exampleField = :val')

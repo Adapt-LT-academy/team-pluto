@@ -2,12 +2,12 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Ferries;
+use App\Entity\Ferry;
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 
-class FerriesFixtures extends Fixture{
+class FerryFixtures extends Fixture{
         public function load(ObjectManager $manager)
         {
             $ferries = [
@@ -31,7 +31,7 @@ class FerriesFixtures extends Fixture{
                 ],
             ];
             foreach ($ferries as $data) {
-                $ferry = new Ferries();
+                $ferry = new Ferry();
                 $ferry->setStartingDoc($data['starting_doc']);
                 $ferry->setDestinationDoc($data['destination_doc']);
                 $ferry->setMaxPassengers($data['max_passengers']);
