@@ -23,19 +23,21 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface{
     {
         $this->manager = $manager;
         $reservation = new Reservation();
+        $reservation->setPassengers(2);
+        $reservation->setVehicles(1);
         /**
          * @var Customer $customer
          */
         $customer = $this->getObject(Customer::class, ['name' => 'John']);
-        $reservation->addLineItemToOrder($customer);
+        $reservation->setCustomers($customer);
 
         /**
          * @var Ferry $ferry
          */
         $ferry = $this->getObject(Ferry::class, ['starting_doc' => 'Klaipeda']);
-        $reservation->addLineItemToOrder($ferry);
+        $reservation->setFerry($ferry);
 
-        //$reservation->calculateTotal();
+        $reservation->calculateTotal();
 
         $manager->persist($reservation);
         $manager->flush();

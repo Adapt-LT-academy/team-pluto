@@ -34,7 +34,7 @@ class Reservation
 
     /**
      * One Reservation has Many Customer.
-     * @ORM\OneToMany(targetEntity="Customer", mappedBy="reservation")
+     * @ORM\ManyToOne(targetEntity="Customer", inversedBy="reservation")
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      */
     protected $customers;
@@ -103,6 +103,8 @@ class Reservation
     public function setFerry(Ferry $ferry): self
     {
         $this->ferry = $ferry;
+
+        return $this;
     }
 
     /**
@@ -125,15 +127,13 @@ class Reservation
         return $this;
     }
 
-    /*
-     * //Haaalp!
     public function calculateTotal() {
         $total = 0;
-        $total = ($this->getPassengers() + 1) * $this->getFerry().getPricePerPassenger();
-        $total += $this->vehicles * $this->getFerry().getPricePerVehicle();
+        $total = $this->getPassengers() * $this->getFerry()->getPricePerPassenger();
+        $total += $this->vehicles * $this->getFerry()->getPricePerVehicle();
 
         $this->setTotal($total);
     }
-    */
+
 
 }

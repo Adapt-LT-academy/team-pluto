@@ -33,7 +33,7 @@ class Customer
 
     /**
      * Many Customers has One Reservation
-     * @ORM\ManyToOne(targetEntity="Reservation", inversedBy="customers")
+     * @ORM\OneToMany(targetEntity="Reservation", mappedBy="customers")
      */
     private $reservation;
 
