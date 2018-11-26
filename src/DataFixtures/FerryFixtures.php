@@ -30,6 +30,7 @@ class FerryFixtures extends Fixture{
                     'date' => '2012-03-06 17:33:07',
                 ],
             ];
+            //Use timestamp
             foreach ($ferries as $data) {
                 $ferry = new Ferry();
                 $ferry->setStartingDoc($data['starting_doc']);
