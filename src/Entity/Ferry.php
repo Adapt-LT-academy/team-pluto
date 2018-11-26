@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\FerriesRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\FerryRepository")
  */
-class Ferries
+class Ferry
 {
     /**
      * @ORM\Id()
@@ -50,6 +51,12 @@ class Ferries
      * @ORM\Column(type="datetime")
      */
     private $date;
+
+    /**
+     * One Ferry has Many Reservation
+     * @ORM\OneToMany(targetEntity="Reservation", mappedBy="ferry")
+     */
+    private $reservations;
 
     public function getId(): ?int
     {
@@ -136,6 +143,26 @@ class Ferries
     public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getReservations() : ?ArrayCollection
+    {
+        return $this->reservations;
+    }
+
+    /**
+     * @param Reservation $reservation
+     *
+     * @return $this
+     */
+    public function setReservation(Reservation $reservation): self
+    {
+        $this->reservation = $reservation;
 
         return $this;
     }

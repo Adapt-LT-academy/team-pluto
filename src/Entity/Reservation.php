@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -19,7 +20,7 @@ class Reservation
     /**
      * @ORM\Column(type="integer")
      */
-    private $price;
+    private $total = 0;
 
     /**
      * @ORM\Column(type="integer")
@@ -31,31 +32,33 @@ class Reservation
      */
     private $vehicles;
 
-     /**
-     * One Reservation has One Customer.
-     * @ORM\OneToOne(targetEntity="Customer", mappedBy="reservation", cascade={"persist"})
+    /**
+     * One Reservation has Many Customer.
+     * @ORM\OneToMany(targetEntity="Customer", mappedBy="reservation")
+     * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      */
-    protected $customer_id;
+    protected $customers;
 
-     /**
-     * One Reservation has One Ferries.
-     * @ORM\OneToOne(targetEntity="Ferries", mappedBy="reservation", cascade={"persist"})
+    /**
+     * One Ferry has Many Reservation
+     * @ORM\ManyToOne(targetEntity="Ferry", inversedBy="reservations")
+     * @ORM\JoinColumn(name="ferry_id", referencedColumnName="id")
      */
-    protected $ferry_id;
+    protected $ferry;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getPrice(): ?int
+    public function getTotal(): ?int
     {
-        return $this->price;
+        return $this->total;
     }
 
-    public function setPrice(int $price): self
+    public function setTotal(int $total): self
     {
-        $this->price = $price;
+        $this->total = $total;
 
         return $this;
     }
@@ -84,38 +87,53 @@ class Reservation
         return $this;
     }
 
-    public function getCustomer(): ?Customer
+    /**
+     * @return Ferry
+     */
+    public function getFerry() : Ferry
     {
-      return $this->customer_id;
+        return $this->ferry;
     }
 
     /**
-     * @param Customer $customer
+     * @param Ferry $ferry
      *
      * @return $this
      */
-    public function addCustomer(Customer $customer): self
+    public function setFerry(Ferry $ferry): self
     {
-      $this->customer_id = $customer;
-
-      return $this;
-    }
-
-    public function getFerries(): ?Ferries
-    {
-      return $this->ferry_id;
+        $this->ferry = $ferry;
     }
 
     /**
-     * @param Ferries $ferries
+     * @return ArrayCollection
+     */
+    public function getCustomers() : ?ArrayCollection
+    {
+        return $this->customers;
+    }
+
+    /**
+     * @param Customer $customers
      *
      * @return $this
      */
-    public function addFerries(Ferries $ferries): self
+    public function setCustomers(Customer $customers): self
     {
-      $this->ferry_id = $ferries;
+        $this->customers = $customers;
 
-      return $this;
+        return $this;
     }
+
+    /*
+     * //Haaalp!
+    public function calculateTotal() {
+        $total = 0;
+        $total = ($this->getPassengers() + 1) * $this->getFerry().getPricePerPassenger();
+        $total += $this->vehicles * $this->getFerry().getPricePerVehicle();
+
+        $this->setTotal($total);
+    }
+    */
 
 }

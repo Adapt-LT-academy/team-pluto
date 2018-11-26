@@ -31,6 +31,13 @@ class Customer
      */
     private $email;
 
+    /**
+     * Many Customers has One Reservation
+     * @ORM\ManyToOne(targetEntity="Reservation", inversedBy="customers")
+     */
+    private $reservation;
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -68,6 +75,26 @@ class Customer
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * @return Reservation
+     */
+    public function getReservation() : Reservation
+    {
+        return $this->reservation;
+    }
+
+    /**
+     * @param Reservation $reservation
+     *
+     * @return $this
+     */
+    public function setReservation(Reservation $reservation): self
+    {
+        $this->reservation = $reservation;
 
         return $this;
     }
