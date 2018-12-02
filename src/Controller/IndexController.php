@@ -10,7 +10,7 @@ use BotMan\BotMan\Cache\SymfonyCache;
 use BotMan\BotMan\Drivers\DriverManager;
 use BotMan\BotMan\Middleware\ApiAi;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use App\Service\PizzaOrderConversation;
+use App\Service\FerryOrderConversation;
 
 class IndexController extends Controller
 {
@@ -41,10 +41,11 @@ return $this->render('base.html.twig');
     $dialogflow = ApiAi::create('s0meRand0mT0ken')->listenForAction();
     $botman->middleware->received($dialogflow);
     // Give the bot some things to listen for.
+
     $botman->hears(
       '(hello|hi|hey|sveiki)',
       function (BotMan $bot) {
-        $bot->startConversation(new PizzaOrderConversation);
+        $bot->startConversation(new FerryOrderConversation);
       }
     );
     $botman->userStorage();

@@ -12,7 +12,7 @@ class FerryFixtures extends Fixture{
         {
             $ferries = [
                 [
-                    'starting_doc' => 'Klaipeda',
+                    'starting_doc' => 'Klaipėda',
                     'destination_doc' => 'Ryga',
                     'max_passengers' => '10',
                     'max_vehicles' => '2',
@@ -21,8 +21,17 @@ class FerryFixtures extends Fixture{
                     'date' => '2012-03-06 17:33:07',
                 ],
                 [
-                    'starting_doc' => 'Klaipeda',
+                    'starting_doc' => 'Klaipėda',
                     'destination_doc' => 'Talinas',
+                    'max_passengers' => '20',
+                    'max_vehicles' => '5',
+                    'price_per_passenger' => 4000,
+                    'price_per_vehicle' => 10000,
+                    'date' => '2012-03-06 17:33:07',
+                ],
+                [
+                    'starting_doc' => 'Klaipėda',
+                    'destination_doc' => 'Kylis',
                     'max_passengers' => '20',
                     'max_vehicles' => '5',
                     'price_per_passenger' => 4000,
