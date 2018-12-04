@@ -14,10 +14,16 @@ use BotMan\BotMan\Messages\Incoming\Answer;
 use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use BotMan\BotMan\Messages\Outgoing\Question;
 use DateTime;
+use App\Traits\ContainerAwareConversationTrait;
 
 
 class FerryOrderConversation extends Conversation
 {
+    use ContainerAwareConversationTrait;
+
+    protected $customers;
+
+
     protected $destination;
 
     protected $date;
@@ -59,6 +65,8 @@ class FerryOrderConversation extends Conversation
 
     public function askDestination()
     {
+        //instead lets have buttons with availabe FROM places
+
         $question = Question::create('Select destination')
             ->callbackId('select_time')
             ->addButtons([
@@ -191,6 +199,11 @@ class FerryOrderConversation extends Conversation
         });
     }
 
+    public function testing()
+    {
+        $this->say('hellooooo');
+    }
+
     public function printInformation()
     {
 
@@ -213,7 +226,31 @@ class FerryOrderConversation extends Conversation
 
     public function run()
     {
-        // This will be called immediately
-        $this->startingQuestion();
+        //$this->customers = $this->getContainer()->get(DBService::class)->getCustomers();
+        //$toppings = $this->getContainer()->get(OptionsService::class)->getToppings();
+        $testinggg = $this->getContainer()->get(DBService::class)->getCustomers;
+        $customerss = $this->getContainer()->get(DBService::class)->getCustomers();
+        //$repo = $this->getDcotrine()->getRepostitory()
+
+        $buttons = [];
+
+        foreach ($customerss as $topping)
+        {
+            $buttons[] = Button::create($topping->getName())->value($topping->getId());
+        }
+
+        $question = Question::create('What Pizza size do you want?');
+        $question->addButtons(
+            $buttons
+        );
+        $this->ask(
+            $question,
+            function ($answer) {
+            }
+        );
+
+
+        $this->testing();
+        //$this->startingQuestion();
     }
 }
