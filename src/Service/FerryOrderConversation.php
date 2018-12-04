@@ -1,30 +1,22 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mindaho
- * Date: 18.12.2
- * Time: 13.00
- */
 
 namespace App\Service;
-
 
 use BotMan\BotMan\Messages\Conversations\Conversation;
 use BotMan\BotMan\Messages\Incoming\Answer;
 use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use BotMan\BotMan\Messages\Outgoing\Question;
-use DateTime;
 use App\Traits\ContainerAwareConversationTrait;
-
+use DateTime;
 
 class FerryOrderConversation extends Conversation
 {
     use ContainerAwareConversationTrait;
 
-    protected $customers;
+    protected $startingDoc;
 
+    protected $destinationDoc;
 
-    protected $destination;
 
     protected $date;
 
@@ -40,6 +32,10 @@ class FerryOrderConversation extends Conversation
 
     protected $vehicle;
 
+    public function run()
+    {
+        $this->startingQuestion();
+    }
 
     public function startingQuestion()
     {
@@ -52,36 +48,51 @@ class FerryOrderConversation extends Conversation
             ]);
 
         $this->ask($question, function (Answer $answer) {
-            // Detect if button was clicked:
             if ($answer->isInteractiveMessageReply()) {
                 if($answer->getValue() == 'yes'){
-                    $this->askDestination();
+                    $this->askStartingDoc();
                 }
-                //$selectedValue = $answer->getValue(); // will be either 'yes' or 'no'
-                //$selectedText = $answer->getText(); // will be either 'Of course' or 'Hell no!'
             }
         });
     }
 
-    public function askDestination()
+    public function askStartingDoc()
     {
         //instead lets have buttons with availabe FROM places
 
-        $question = Question::create('Select destination')
-            ->callbackId('select_time')
-            ->addButtons([
-                Button::create('Klaipėda-Ryga')->value('ryga'),
-                Button::create('Klaipėda-Talinas')->value('talinas'),
-                Button::create('Klaipėda-Kylis')->value('kylis'),
-            ]);
+        $question = Question::create('From what doc would you like to book a ferry?');
+
         $this->ask($question, function (Answer $answer) {
-            // Detect if button was clicked:
-            if ($answer->isInteractiveMessageReply()) {
-                $this->destination = $answer->getValue();
+            $exists = $this->getContainer()->get(DBService::class)->isExistingDoc($this->$answer->getText());
+            if ($exists) {
+                $this->startingDoc = $this->$answer->getText();
                 $this->askDate();
+            } else {
+                $this->say('Sorry no ferries from selected location exists. Please try again.');
+                $this->askStartingDoc();
             }
         });
     }
+
+    /*
+    public function askDestinationDoc()
+    {
+        //instead lets have buttons with availabe FROM places
+
+        $question = Question::create('What is your destination?');
+
+        $this->ask($question, function (Answer $answer) {
+            $exists = $this->getContainer()->get(DBService::class)->isExistingDestination($this->$answer->getText());
+            if ($exists) {
+                $this->destinationDoc = $this->$answer->getText();
+                $this->askType();
+            } else {
+                $this->say('Sorry no ferries to selected location exists. Please try again.');
+                $this->askStartingDoc();
+            }
+        });
+    }
+    */
 
     public function askDate()
     {
@@ -158,6 +169,7 @@ class FerryOrderConversation extends Conversation
             $this->askPassenger();
         });
     }
+
     /*End of the Customer*/
 
     public function askPassenger()
@@ -199,58 +211,24 @@ class FerryOrderConversation extends Conversation
         });
     }
 
-    public function testing()
-    {
-        $this->say('hellooooo');
-    }
-
     public function printInformation()
     {
 
         $message = '=========================<br>';
-        $message .='Selected Ferry: <br>';
-        $message .='Destination: ' . $this->destination .'<br>';
-        $message .='Date: ' . $this->date .'<br>';
-        $message .='Time: ' . $this->time .'<br>';
-        $message .='=========================<br><br>';
-        $message .='Customer information: <br>';
-        $message .='Name: ' . $this->firstname .'<br>';
-        $message .='Lastname: ' . $this->lastname .'<br>';
-        $message .='Email: ' . $this->email .'<br>';
-        $message .='Passengers: ' . $this->passengers .'<br>';
-        $message .='Vehicles: ' . $this->vehicle .'<br>';
+        $message .= 'Selected Ferry: <br>';
+        $message .= 'Destination: ' . $this->destination . '<br>';
+        $message .= 'Date: ' . $this->date . '<br>';
+        $message .= 'Time: ' . $this->time . '<br>';
+        $message .= '=========================<br><br>';
+        $message .= 'Customer information: <br>';
+        $message .= 'Name: ' . $this->firstname . '<br>';
+        $message .= 'Lastname: ' . $this->lastname . '<br>';
+        $message .= 'Email: ' . $this->email . '<br>';
+        $message .= 'Passengers: ' . $this->passengers . '<br>';
+        $message .= 'Vehicles: ' . $this->vehicle . '<br>';
         $message .= '=========================<br>';
 
-        $this->say('Here is your booking details.' .$message);
+        $this->say('Here is your booking details.' . $message);
     }
 
-    public function run()
-    {
-        //$this->customers = $this->getContainer()->get(DBService::class)->getCustomers();
-        //$toppings = $this->getContainer()->get(OptionsService::class)->getToppings();
-        $testinggg = $this->getContainer()->get(DBService::class)->getCustomers;
-        $customerss = $this->getContainer()->get(DBService::class)->getCustomers();
-        //$repo = $this->getDcotrine()->getRepostitory()
-
-        $buttons = [];
-
-        foreach ($customerss as $topping)
-        {
-            $buttons[] = Button::create($topping->getName())->value($topping->getId());
-        }
-
-        $question = Question::create('What Pizza size do you want?');
-        $question->addButtons(
-            $buttons
-        );
-        $this->ask(
-            $question,
-            function ($answer) {
-            }
-        );
-
-
-        $this->testing();
-        //$this->startingQuestion();
-    }
 }

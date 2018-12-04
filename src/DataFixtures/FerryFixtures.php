@@ -12,42 +12,42 @@ class FerryFixtures extends Fixture{
         {
             $ferries = [
                 [
-                    'starting_doc' => 'Klaipėda',
-                    'destination_doc' => 'Ryga',
-                    'max_passengers' => '10',
-                    'max_vehicles' => '2',
-                    'price_per_passenger' => 6000,
-                    'price_per_vehicle' => 12000,
+                    'startingDoc' => 'Klaipėda',
+                    'destinationDoc' => 'Ryga',
+                    'maxPassengers' => '10',
+                    'maxVehicles' => '2',
+                    'pricePerPassenger' => 6000,
+                    'pricePerVehicle' => 12000,
                     'date' => '2012-03-06 17:33:07',
                 ],
                 [
-                    'starting_doc' => 'Klaipėda',
-                    'destination_doc' => 'Talinas',
-                    'max_passengers' => '20',
-                    'max_vehicles' => '5',
-                    'price_per_passenger' => 4000,
-                    'price_per_vehicle' => 10000,
+                    'startingDoc' => 'Klaipėda',
+                    'destinationDoc' => 'Talinas',
+                    'maxPassengers' => '20',
+                    'maxVehicles' => '5',
+                    'pricePerPassenger' => 4000,
+                    'pricePerVehicle' => 10000,
                     'date' => '2012-03-06 17:33:07',
                 ],
                 [
-                    'starting_doc' => 'Klaipėda',
-                    'destination_doc' => 'Kylis',
-                    'max_passengers' => '20',
-                    'max_vehicles' => '5',
-                    'price_per_passenger' => 4000,
-                    'price_per_vehicle' => 10000,
+                    'startingDoc' => 'Klaipėda',
+                    'destinationDoc' => 'Kylis',
+                    'maxPassengers' => '20',
+                    'maxVehicles' => '5',
+                    'pricePerPassenger' => 4000,
+                    'pricePerVehicle' => 10000,
                     'date' => '2012-03-06 17:33:07',
                 ],
             ];
             //Use timestamp
             foreach ($ferries as $data) {
                 $ferry = new Ferry();
-                $ferry->setStartingDoc($data['starting_doc']);
-                $ferry->setDestinationDoc($data['destination_doc']);
-                $ferry->setMaxPassengers($data['max_passengers']);
-                $ferry->setMaxVehicles($data['max_vehicles']);
-                $ferry->setPricePerPassenger($data['price_per_passenger']);
-                $ferry->setPricePerVehicle($data['price_per_vehicle']);
+                $ferry->setStartingDoc($data['startingDoc']);
+                $ferry->setDestinationDoc($data['destinationDoc']);
+                $ferry->setMaxPassengers($data['maxPassengers']);
+                $ferry->setMaxVehicles($data['maxVehicles']);
+                $ferry->setPricePerPassenger($data['pricePerPassenger']);
+                $ferry->setPricePerVehicle($data['pricePerVehicle']);
                 $now = new DateTime();
                 $now->format('Y-m-d H:i:s');
                 $ferry->setDate($now);

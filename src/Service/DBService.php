@@ -3,36 +3,49 @@
 
 namespace App\Service;
 
-use App\Entity\Customer;
+use App\Entity\Ferry;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DBService
 {
     protected $em;
 
+    /**
+     * DBService constructor.
+     * @param EntityManagerInterface $entityManager
+     */
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->em = $entityManager;
     }
 
-    /**
-     * @return Customer[]|array
-     */
-    public function getCustomers()
+    public function isExistingDoc(String $startingDoc)
     {
-        $customer = new Customer();
-        $customer1 = new Customer();
+        $availableInDB = $this->em->getRepository(Ferry::class)->findBy(array('$startingDoc' => $startingDoc));
+        if(var_dump(count($availableInDB)) > 0)
+        {
+            return true;
+        }
+        return false;
+    }
 
-        $customer->setName('Jonas')->setLastname('neturi')->setEmail('toksirtoks');
-        $customer1->setName('Jonasass')->setLastname('netasduri')->setEmail('toksirtasdoks');
+    public function isExistingDestination(String $destinationDoc)
+    {
+        $availableInDB = $this->em->getRepository(Ferry::class)->findBy(array('$destinationDoc' => $destinationDoc));
+        if(var_dump(count($availableInDB)) > 0)
+        {
+            return true;
+        }
+        return false;
+    }
 
-        return [
-            $customer,
-            $customer1
-        ];
-
-        return $this->em->getRepository(Customer::class)->findAll();
-
+    /**
+     * @param String $destination
+     * @return null|object
+     */
+    public function getDestination(String $destination)
+    {
+        return $this->em->getRepository(Ferry::class)->findOneBy(array('$startingDoc' => $destination ));
     }
 
 

@@ -20,32 +20,32 @@ class Ferry
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $starting_doc;
+    private $startingDoc;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $destination_doc;
+    private $destinationDoc;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $max_passengers;
+    private $maxPassengers;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $max_vehicles;
+    private $maxVehicles;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $price_per_passenger;
+    private $pricePerPassenger;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $price_per_vehicle;
+    private $pricePerVehicle;
 
     /**
      * @ORM\Column(type="datetime")
@@ -58,79 +58,130 @@ class Ferry
      */
     private $reservations;
 
-    public function getId(): ?int
+    /**
+     * @return int
+     */
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getStartingDoc(): ?string
+    /**
+     * @return string
+     */
+    public function getStartingDoc(): string
     {
-        return $this->starting_doc;
+        return $this->startingDoc;
     }
 
-    public function setStartingDoc(string $starting_doc): self
+    /**
+     * @param string $startingDoc
+     *
+     * @return $this
+     */
+    public function setStartingDoc(string $startingDoc): self
     {
-        $this->starting_doc = $starting_doc;
+        $this->startingDoc = $startingDoc;
 
         return $this;
     }
 
-    public function getDestinationDoc(): ?string
+    /**
+     * @return string
+     */
+    public function getDestinationDoc(): string
     {
-        return $this->destination_doc;
+        return $this->destinationDoc;
     }
 
-    public function setDestinationDoc(string $destination_doc): self
+    /**
+     * @param string $destinationDoc
+     *
+     * @return $this
+     */
+    public function setDestinationDoc(string $destinationDoc): self
     {
-        $this->destination_doc = $destination_doc;
+        $this->destinationDoc = $destinationDoc;
 
         return $this;
     }
 
-    public function getMaxPassengers(): ?int
+    /**
+     * @return int
+     */
+    public function getMaxPassengers(): int
     {
-        return $this->max_passengers;
+        return $this->maxPassengers;
     }
 
-    public function setMaxPassengers(int $max_passengers): self
+    /**
+     * @param int $maxPassengers
+     *
+     * @return $this
+     */
+    public function setMaxPassengers(int $maxPassengers): self
     {
-        $this->max_passengers = $max_passengers;
+        $this->maxPassengers = $maxPassengers;
 
         return $this;
     }
 
-    public function getMaxVehicles(): ?int
+    /**
+     * @return int
+     */
+    public function getMaxVehicles(): int
     {
-        return $this->max_vehicles;
+        return $this->maxVehicles;
     }
 
-    public function setMaxVehicles(int $max_vehicles): self
+    /**
+     * @param int $maxVehicles
+     *
+     * @return $this
+     */
+    public function setMaxVehicles(int $maxVehicles): self
     {
-        $this->max_vehicles = $max_vehicles;
+        $this->maxVehicles = $maxVehicles;
 
         return $this;
     }
 
-    public function getPricePerPassenger(): ?int
+    /**
+     * @return int
+     */
+    public function getPricePerPassenger(): int
     {
-        return $this->price_per_passenger;
+        return $this->pricePerPassenger;
     }
 
-    public function setPricePerPassenger(int $price_per_passenger): self
+    /**
+     * @param int $pricePerPassenger
+     *
+     * @return $this
+     */
+    public function setPricePerPassenger(int $pricePerPassenger): self
     {
-        $this->price_per_passenger = $price_per_passenger;
+        $this->pricePerPassenger = $pricePerPassenger;
 
         return $this;
     }
 
-    public function getPricePerVehicle(): ?int
+    /**
+     * @return int
+     */
+    public function getPricePerVehicle(): int
     {
-        return $this->price_per_vehicle;
+        return $this->pricePerVehicle;
     }
 
-    public function setPricePerVehicle(int $price_per_vehicle): self
+    /**
+     * @param int $pricePerVehicle
+     *
+     * @return $this
+     */
+    public function setPricePerVehicle(int $pricePerVehicle): self
     {
-        $this->price_per_vehicle = $price_per_vehicle;
+        $this->pricePerVehicle = $pricePerVehicle;
 
         return $this;
     }
