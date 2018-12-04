@@ -78,17 +78,17 @@ class FerryOrderConversation extends Conversation
     public function askDate()
     {
         $availableDates = [
-            new DateTime(),
-            new DateTime(),
-            new DateTime()
+            new DateTime('next Monday'),
+            new DateTime('next Thursday'),
+            new DateTime('next Saturday')
         ];
 
         $question = Question::create('Select date')
             ->callbackId('select_date')
             ->addButtons([
-                Button::create($availableDates[0]->modify('+1 day')->format('M d'))->value($availableDates[0]->format('Y-m-d')),
-                Button::create($availableDates[1]->modify('+2 day')->format('M d'))->value($availableDates[1]->format('Y-m-d')),
-                Button::create($availableDates[2]->modify('+3 day')->format('M d'))->value($availableDates[2]->format('Y-m-d')),
+                Button::create($availableDates[0]->format('M d'))->value($availableDates[0]->format('Y-m-d')),
+                Button::create($availableDates[1]->format('M d'))->value($availableDates[1]->format('Y-m-d')),
+                Button::create($availableDates[2]->format('M d'))->value($availableDates[2]->format('Y-m-d')),
             ]);
 
         $this->ask($question, function (Answer $answer) {
