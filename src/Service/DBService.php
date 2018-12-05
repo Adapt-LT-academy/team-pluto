@@ -4,6 +4,7 @@
 namespace App\Service;
 
 use App\Entity\Ferry;
+use App\Entity\Reservation;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DBService
@@ -21,8 +22,8 @@ class DBService
 
     public function isExistingDoc(String $startingDoc)
     {
-        $availableInDB = $this->em->getRepository(Ferry::class)->findBy(array('$startingDoc' => $startingDoc));
-        if(var_dump(count($availableInDB)) > 0)
+        $availableInDB = $this->em->getRepository(Ferry::class)->findBy(array('startingDoc' => $startingDoc));
+        if(count($availableInDB) > 0)
         {
             return true;
         }
@@ -31,13 +32,21 @@ class DBService
 
     public function isExistingDestination(String $destinationDoc)
     {
-        $availableInDB = $this->em->getRepository(Ferry::class)->findBy(array('$destinationDoc' => $destinationDoc));
-        if(var_dump(count($availableInDB)) > 0)
+        $availableInDB = $this->em->getRepository(Ferry::class)->findBy(array('destinationDoc' => $destinationDoc));
+        if(count($availableInDB) > 0)
         {
             return true;
         }
         return false;
     }
+
+  public function findFerry(String $startingDoc, String $destinationDoc)
+  {
+    $ferry = $this->em->getRepository(Ferry::class)->findOneBy(array('startingDoc' => $startingDoc, 'destinationDoc' => $destinationDoc));
+
+    return $ferry;
+
+  }
 
     /**
      * @param String $destination
@@ -48,5 +57,9 @@ class DBService
         return $this->em->getRepository(Ferry::class)->findOneBy(array('$startingDoc' => $destination ));
     }
 
+    public function saveReservation(Reservation $reservation) {
+      $this->em->persist($reservation);
+      $this->em->flush();
+    }
 
 }
