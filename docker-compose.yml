@@ -11,7 +11,7 @@ services:
       MYSQL_USER: $DB_USER
       MYSQL_PASSWORD: $DB_PASSWORD
     ports:
-      - 3306:3306
+      - "3306:3306"
   php:
     image: wodby/php:$PHP_TAG
     container_name: "${PROJECT_NAME}_php"
