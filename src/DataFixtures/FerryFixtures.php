@@ -18,7 +18,6 @@ class FerryFixtures extends Fixture{
                     'maxVehicles' => '2',
                     'pricePerPassenger' => 6000,
                     'pricePerVehicle' => 12000,
-                    'date' => '2012-03-06 17:33:07',
                 ],
                 [
                     'startingDoc' => 'Klaipėda',
@@ -27,7 +26,6 @@ class FerryFixtures extends Fixture{
                     'maxVehicles' => '5',
                     'pricePerPassenger' => 4000,
                     'pricePerVehicle' => 10000,
-                    'date' => '2012-03-06 17:33:07',
                 ],
                 [
                     'startingDoc' => 'Klaipėda',
@@ -36,11 +34,25 @@ class FerryFixtures extends Fixture{
                     'maxVehicles' => '5',
                     'pricePerPassenger' => 4000,
                     'pricePerVehicle' => 10000,
-                    'date' => '2012-03-06 17:33:07',
                 ],
             ];
             //Use timestamp
+
+          $dates = [
+            ['date' => new DateTime('next Monday 9PM')],
+            ['date' => new DateTime('next Monday 1AM')],
+            ['date' => new DateTime('next Monday 7AM')],
+            ['date' => new DateTime('next Thursday 9PM')],
+            ['date' => new DateTime('next Thursday 1AM')],
+            ['date' => new DateTime('next Thursday 7AM')],
+            ['date' => new DateTime('next Saturday 9PM')],
+            ['date' => new DateTime('next Saturday 1AM')],
+            ['date' => new DateTime('next Saturday 7AM')],
+
+          ];
+
             foreach ($ferries as $data) {
+              foreach ($dates as $date) {
                 $ferry = new Ferry();
                 $ferry->setStartingDoc($data['startingDoc']);
                 $ferry->setDestinationDoc($data['destinationDoc']);
@@ -48,10 +60,9 @@ class FerryFixtures extends Fixture{
                 $ferry->setMaxVehicles($data['maxVehicles']);
                 $ferry->setPricePerPassenger($data['pricePerPassenger']);
                 $ferry->setPricePerVehicle($data['pricePerVehicle']);
-                $now = new DateTime();
-                $now->format('Y-m-d H:i:s');
-                $ferry->setDate($now);
+                $ferry->setDate($date['date']);
                 $manager->persist($ferry);
+              }
             }
             $manager->flush();
         }
