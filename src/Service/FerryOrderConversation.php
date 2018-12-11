@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Entity\Ferry;
+use App\Entity\Reservation;
 use BotMan\BotMan\Messages\Conversations\Conversation;
 use BotMan\BotMan\Messages\Incoming\Answer;
 use BotMan\BotMan\Messages\Outgoing\Actions\Button;
@@ -13,9 +15,27 @@ class FerryOrderConversation extends Conversation
 {
     use ContainerAwareConversationTrait;
 
+    /**
+     * @var Reservation
+     */
+    protected $reservation;
+
+  /**
+   * @var Ferry
+   */
+  protected $ferry;
+
     protected $startingDoc;
 
     protected $destinationDoc;
+
+
+
+
+
+
+
+
 
 
     protected $date;
@@ -34,7 +54,8 @@ class FerryOrderConversation extends Conversation
 
     public function run()
     {
-        $this->startingQuestion();
+      $this->reservation = new Reservation();
+      $this->startingQuestion();
     }
 
     public function startingQuestion()
@@ -63,9 +84,9 @@ class FerryOrderConversation extends Conversation
         $question = Question::create('From what doc would you like to book a ferry?');
 
         $this->ask($question, function (Answer $answer) {
-            $exists = $this->getContainer()->get(DBService::class)->isExistingDoc($this->$answer->getText());
+            $exists = $this->getContainer()->get(DBService::class)->isExistingDoc($answer->getText());
             if ($exists) {
-                $this->startingDoc = $this->$answer->getText();
+                $this->startingDoc = $answer->getText();
                 $this->askDate();
             } else {
                 $this->say('Sorry no ferries from selected location exists. Please try again.');
@@ -85,6 +106,9 @@ class FerryOrderConversation extends Conversation
             $exists = $this->getContainer()->get(DBService::class)->isExistingDestination($this->$answer->getText());
             if ($exists) {
                 $this->destinationDoc = $this->$answer->getText();
+
+                $this->ferry = $this->getContainer()->get(DBService::class)->getFerry($this->startingDoc, $this->destinationDoc);
+
                 $this->askType();
             } else {
                 $this->say('Sorry no ferries to selected location exists. Please try again.');
@@ -99,7 +123,7 @@ class FerryOrderConversation extends Conversation
         $availableDates = [
             new DateTime(),
             new DateTime(),
-            new DateTime()
+            new DateTime(),
         ];
 
         $question = Question::create('Select date')
@@ -207,6 +231,7 @@ class FerryOrderConversation extends Conversation
             if ($answer->isInteractiveMessageReply()) {
                 $this->vehicle = $answer->getValue();
                 $this->printInformation();
+                $this->saveReservation();
             }
         });
     }
@@ -216,7 +241,7 @@ class FerryOrderConversation extends Conversation
 
         $message = '=========================<br>';
         $message .= 'Selected Ferry: <br>';
-        $message .= 'Destination: ' . $this->destination . '<br>';
+//        $message .= 'Destination: ' . $this->destination . '<br>';
         $message .= 'Date: ' . $this->date . '<br>';
         $message .= 'Time: ' . $this->time . '<br>';
         $message .= '=========================<br><br>';
@@ -229,6 +254,14 @@ class FerryOrderConversation extends Conversation
         $message .= '=========================<br>';
 
         $this->say('Here is your booking details.' . $message);
+    }
+
+    public function saveReservation() {
+      $this->reservation->setFerry($this->ferry);
+
+
+      $this->reservation->calculateTotal();
+      $this->getContainer()->get(DBService::class)->saveReservation($this->reservation);
     }
 
 }
