@@ -3,6 +3,7 @@
 
 namespace App\Service;
 
+use App\Entity\Customer;
 use App\Entity\Ferry;
 use App\Entity\Reservation;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,6 +31,7 @@ class DBService
         return false;
     }
 
+
     public function isExistingDestination(String $destinationDoc)
     {
         $availableInDB = $this->em->getRepository(Ferry::class)->findBy(array('destinationDoc' => $destinationDoc));
@@ -40,7 +42,7 @@ class DBService
         return false;
     }
 
-  public function findFerry(String $startingDoc, String $destinationDoc)
+  public function getFerry(String $startingDoc, String $destinationDoc)
   {
     $ferry = $this->em->getRepository(Ferry::class)->findOneBy(array('startingDoc' => $startingDoc, 'destinationDoc' => $destinationDoc));
 
@@ -55,6 +57,15 @@ class DBService
     public function getDestination(String $destination)
     {
         return $this->em->getRepository(Ferry::class)->findOneBy(array('$startingDoc' => $destination ));
+    }
+
+    public function getCustomer(string $email){
+        $availableInDB = $this->em->getRepository(Customer::class)->findBy(array('email' => $email));
+        if(count($availableInDB) > 0)
+        {
+            return $availableInDB;
+        }
+        return null;
     }
 
     public function saveReservation(Reservation $reservation) {

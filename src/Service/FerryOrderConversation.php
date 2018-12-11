@@ -34,14 +34,6 @@ class FerryOrderConversation extends Conversation
 
 
 
-
-
-
-
-    protected $date;
-
-    protected $time;
-
     protected $firstname;
 
     protected $lastname;
@@ -87,7 +79,7 @@ class FerryOrderConversation extends Conversation
             $exists = $this->getContainer()->get(DBService::class)->isExistingDoc($answer->getText());
             if ($exists) {
                 $this->startingDoc = $answer->getText();
-                $this->askDate();
+                $this->askDestinationDoc();
             } else {
                 $this->say('Sorry no ferries from selected location exists. Please try again.');
                 $this->askStartingDoc();
@@ -95,7 +87,7 @@ class FerryOrderConversation extends Conversation
         });
     }
 
-    /*
+
     public function askDestinationDoc()
     {
         //instead lets have buttons with availabe FROM places
@@ -103,66 +95,71 @@ class FerryOrderConversation extends Conversation
         $question = Question::create('What is your destination?');
 
         $this->ask($question, function (Answer $answer) {
-            $exists = $this->getContainer()->get(DBService::class)->isExistingDestination($this->$answer->getText());
+            $exists = $this->getContainer()->get(DBService::class)->isExistingDestination($answer->getText());
             if ($exists) {
-                $this->destinationDoc = $this->$answer->getText();
-
-                $this->ferry = $this->getContainer()->get(DBService::class)->getFerry($this->startingDoc, $this->destinationDoc);
-
-                $this->askType();
+                $this->destinationDoc = $answer->getText();
+                $this->getFerry();
             } else {
                 $this->say('Sorry no ferries to selected location exists. Please try again.');
-                $this->askStartingDoc();
+                $this->askDestinationDoc();
             }
         });
     }
-    */
+
+    public function getFerry()
+    {
+        $this->ferry = $this->getContainer()->get(DBService::class)->getFerry($this->startingDoc, $this->destinationDoc);
+        $this->askDate();
+    }
+
 
     public function askDate()
     {
-        $availableDates = [
-            new DateTime(),
-            new DateTime(),
-            new DateTime(),
-        ];
+        $availableDate = $this->ferry->getDate();
 
-        $question = Question::create('Select date')
+        $question = Question::create('Here are available dates. Chose one:')
             ->callbackId('select_date')
             ->addButtons([
-                Button::create($availableDates[0]->modify('+1 day')->format('M d'))->value($availableDates[0]->format('Y-m-d')),
-                Button::create($availableDates[1]->modify('+2 day')->format('M d'))->value($availableDates[1]->format('Y-m-d')),
-                Button::create($availableDates[2]->modify('+3 day')->format('M d'))->value($availableDates[2]->format('Y-m-d')),
+                Button::create($availableDate->format('M d H:i:s'))->value($availableDate),
             ]);
 
         $this->ask($question, function (Answer $answer) {
             // Detect if button was clicked:
             if ($answer->isInteractiveMessageReply()) {
-                $this->date = $answer->getValue();
-                $this->askTime();
-            }
-        });
-    }
-
-    public function askTime()
-    {
-        $question = Question::create('Select time slot?')
-            ->callbackId('select_destination')
-            ->addButtons([
-                Button::create('09:00')->value('09:00'),
-                Button::create('13:00')->value('13:00'),
-                Button::create('17:00')->value('17:00'),
-            ]);
-
-        $this->ask($question, function (Answer $answer) {
-            // Detect if button was clicked:
-            if ($answer->isInteractiveMessageReply()) {
-                $this->time = $answer->getValue();
-                $this->askFirstname();
+                $this->say('To finish reservation we will need your details.');
+                $this->askEmail();
             }
         });
     }
 
     /* Everything regarding Customer*/
+
+    public function askEmail()
+    {
+        $this->ask('Please input your email.', function (Answer $answer) {
+            if(filter_var($answer->getText(), FILTER_VALIDATE_EMAIL))
+            {
+                $this->email = $answer->getText();
+                //returns customerId if exists else -1;
+                $customerExists = $this->getContainer()->get(DBService::class)->getCustomer($this->email);
+                if($customerExists != null)
+                {
+                    $this->say('Customer was found!');
+                    $this->askEmail();
+                }
+                else
+                    {
+                        $this->askEmail();
+                    }
+                //$this->askPassenger();
+            }
+            else
+                {
+                    $this->say('Email address is not correct. Try again.');
+                    $this->askEmail();
+                }
+        });
+    }
 
     public function askFirstname()
     {
@@ -181,16 +178,6 @@ class FerryOrderConversation extends Conversation
             $this->lastname = $answer->getText();
 
             $this->askEmail();
-        });
-    }
-
-    public function askEmail()
-    {
-        $this->ask('One more thing - what is your email?', function (Answer $answer) {
-            // Save result
-            $this->email = $answer->getText();
-
-            $this->askPassenger();
         });
     }
 
