@@ -23,7 +23,7 @@ class FerryOrderConversation extends Conversation
   /**
    * @var Ferry
    */
-  protected $ferry;
+  protected $ferries;
 
     protected $startingDoc;
 
@@ -108,20 +108,24 @@ class FerryOrderConversation extends Conversation
 
     public function getFerry()
     {
-        $this->ferry = $this->getContainer()->get(DBService::class)->getFerry($this->startingDoc, $this->destinationDoc);
+        $this->ferries = $this->getContainer()->get(DBService::class)->getFerry($this->startingDoc, $this->destinationDoc);
+
         $this->askDate();
     }
 
 
     public function askDate()
     {
-        $availableDate = $this->ferry->getDate();
+        $buttons = [];
+
+       foreach ($this->ferries as $ferry) {
+            $buttons[] = Button::create($ferry->getDate()->format('M d H:i'))->value($ferry->getDate());
+
+        }
 
         $question = Question::create('Here are available dates. Chose one:')
             ->callbackId('select_date')
-            ->addButtons([
-                Button::create($availableDate->format('M d H:i:s'))->value($availableDate),
-            ]);
+            ->addButtons($buttons);
 
         $this->ask($question, function (Answer $answer) {
             // Detect if button was clicked:

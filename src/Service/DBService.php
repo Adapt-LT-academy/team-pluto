@@ -44,7 +44,8 @@ class DBService
 
   public function getFerry(String $startingDoc, String $destinationDoc)
   {
-    $ferry = $this->em->getRepository(Ferry::class)->findOneBy(array('startingDoc' => $startingDoc, 'destinationDoc' => $destinationDoc));
+    //$ferry = $this->em->getRepository(Ferry::class)->findOneBy(array('startingDoc' => $startingDoc, 'destinationDoc' => $destinationDoc));
+      $ferry = $this->em->getRepository(Ferry::class)->findBy(array('startingDoc' => $startingDoc, 'destinationDoc' => $destinationDoc));
 
     return $ferry;
 
