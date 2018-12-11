@@ -37,17 +37,27 @@ class Customer
      */
     private $reservation;
 
-
-    public function getId(): ?int
+    /**
+     * @return int
+     */
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
         return $this->name;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -55,11 +65,19 @@ class Customer
         return $this;
     }
 
-    public function getLastname(): ?string
+    /**
+     * @return string
+     */
+    public function getLastname(): string
     {
         return $this->lastname;
     }
 
+    /**
+     * @param string $lastname
+     *
+     * @return $this
+     */
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
@@ -67,11 +85,19 @@ class Customer
         return $this;
     }
 
-    public function getEmail(): ?string
+    /**
+     * @return string
+     */
+    public function getEmail(): string
     {
         return $this->email;
     }
 
+    /**
+     * @param string $email
+     *
+     * @return $this
+     */
     public function setEmail(string $email): self
     {
         $this->email = $email;

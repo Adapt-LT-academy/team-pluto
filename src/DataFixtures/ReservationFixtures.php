@@ -34,7 +34,7 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface{
         /**
          * @var Ferry $ferry
          */
-        $ferry = $this->getObject(Ferry::class, ['starting_doc' => 'Klaipeda']);
+        $ferry = $this->getObject(Ferry::class, ['startingDoc' => 'Klaipeda']);
         $reservation->setFerry($ferry);
 
         $reservation->calculateTotal();
