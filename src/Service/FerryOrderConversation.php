@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Customer;
 use App\Entity\Ferry;
 use App\Entity\Reservation;
 use BotMan\BotMan\Messages\Conversations\Conversation;
@@ -9,7 +10,6 @@ use BotMan\BotMan\Messages\Incoming\Answer;
 use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use BotMan\BotMan\Messages\Outgoing\Question;
 use App\Traits\ContainerAwareConversationTrait;
-use DateTime;
 
 class FerryOrderConversation extends Conversation
 {
@@ -20,10 +20,20 @@ class FerryOrderConversation extends Conversation
      */
     protected $reservation;
 
-  /**
-   * @var Ferry
-   */
-  protected $ferries;
+    /**
+     * @var Ferry
+     */
+    protected $ferries;
+
+    /**
+     * @var Ferry
+     */
+    protected $ferry;
+
+    /**
+     * @var Customer
+     */
+    protected $customer;
 
     protected $startingDoc;
 
@@ -98,7 +108,7 @@ class FerryOrderConversation extends Conversation
             $exists = $this->getContainer()->get(DBService::class)->isExistingDestination($answer->getText());
             if ($exists) {
                 $this->destinationDoc = $answer->getText();
-                $this->getFerry();
+                $this->getFerries();
             } else {
                 $this->say('Sorry no ferries to selected location exists. Please try again.');
                 $this->askDestinationDoc();
@@ -106,7 +116,7 @@ class FerryOrderConversation extends Conversation
         });
     }
 
-    public function getFerry()
+    public function getFerries()
     {
         $this->ferries = $this->getContainer()->get(DBService::class)->getFerry($this->startingDoc, $this->destinationDoc);
 
@@ -118,9 +128,8 @@ class FerryOrderConversation extends Conversation
     {
         $buttons = [];
 
-       foreach ($this->ferries as $ferry) {
-            $buttons[] = Button::create($ferry->getDate()->format('M d H:i'))->value($ferry->getDate());
-
+       foreach ($this->ferries as $key=>$ferry) {
+            $buttons[] = Button::create($ferry->getDate()->format('M d H:i'))->value($key);
         }
 
         $question = Question::create('Here are available dates. Chose one:')
@@ -130,6 +139,7 @@ class FerryOrderConversation extends Conversation
         $this->ask($question, function (Answer $answer) {
             // Detect if button was clicked:
             if ($answer->isInteractiveMessageReply()) {
+                $this->ferry = $this->ferries[$answer->getText()];
                 $this->say('To finish reservation we will need your details.');
                 $this->askEmail();
             }
@@ -144,22 +154,22 @@ class FerryOrderConversation extends Conversation
             if(filter_var($answer->getText(), FILTER_VALIDATE_EMAIL))
             {
                 $this->email = $answer->getText();
-                //returns customerId if exists else -1;
                 $customerExists = $this->getContainer()->get(DBService::class)->getCustomer($this->email);
                 if($customerExists != null)
                 {
-                    $this->say('Customer was found!');
-                    $this->askEmail();
+                    $this->customer = $customerExists;
+                    $this->say('Your are not first time user.');
+                    $this->askPassenger();
                 }
                 else
                     {
-                        $this->askEmail();
+                        $this->say('You are first time user. Please fill in your details.');
+                        $this->askFirstname();
                     }
-                //$this->askPassenger();
             }
             else
                 {
-                    $this->say('Email address is not correct. Try again.');
+                    $this->say('Email was typed incorrectly, please try again.');
                     $this->askEmail();
                 }
         });
@@ -167,8 +177,7 @@ class FerryOrderConversation extends Conversation
 
     public function askFirstname()
     {
-        $this->ask('Hello! What is your firstname?', function(Answer $answer) {
-            // Save result
+        $this->ask('What is your name?', function(Answer $answer) {
             $this->firstname = $answer->getText();
 
             $this->askLastname();
@@ -177,12 +186,20 @@ class FerryOrderConversation extends Conversation
 
     public function askLastname()
     {
-        $this->ask('What is your lastname?', function(Answer $answer) {
-            // Save result
+        $this->ask('What is your surname?', function(Answer $answer) {
             $this->lastname = $answer->getText();
 
-            $this->askEmail();
+            $this->createCustomer();
         });
+    }
+
+    public function createCustomer()
+    {
+        $this->customer = new Customer();
+        $this->customer->setName($this->firstname);
+        $this->customer->setLastname($this->lastname);
+        $this->customer->setEmail($this->email);
+        $this->askPassenger();
     }
 
     /*End of the Customer*/
@@ -222,29 +239,36 @@ class FerryOrderConversation extends Conversation
             if ($answer->isInteractiveMessageReply()) {
                 $this->vehicle = $answer->getValue();
                 $this->printInformation();
-                $this->saveReservation();
             }
         });
     }
 
+
+
     public function printInformation()
     {
-
-        $message = '=========================<br>';
+        $message = '<br>=========================<br>';
         $message .= 'Selected Ferry: <br>';
-//        $message .= 'Destination: ' . $this->destination . '<br>';
-        $message .= 'Date: ' . $this->date . '<br>';
-        $message .= 'Time: ' . $this->time . '<br>';
+        $message .= 'Starting Doc: ' . $this->ferry->getStartingDoc() . '<br>';
+        $message .= 'Destination Doc: ' . $this->ferry->getDestinationDoc() . '<br>';
+        $message .= 'Date: ' . $this->ferry->getDate()->format('M d H:i') . '<br>';
         $message .= '=========================<br><br>';
         $message .= 'Customer information: <br>';
-        $message .= 'Name: ' . $this->firstname . '<br>';
-        $message .= 'Lastname: ' . $this->lastname . '<br>';
-        $message .= 'Email: ' . $this->email . '<br>';
+        $message .= 'Name: ' . $this->customer->getName() . '<br>';
+        $message .= 'Lastname: ' . $this->customer->getLastname() . '<br>';
+        $message .= 'Email: ' . $this->customer->getEmail() . '<br>';
         $message .= 'Passengers: ' . $this->passengers . '<br>';
         $message .= 'Vehicles: ' . $this->vehicle . '<br>';
         $message .= '=========================<br>';
 
+
         $this->say('Here is your booking details.' . $message);
+        //$this->finalizeReservation();
+    }
+
+    public function finalizeReservation()
+    {
+        $this->saveReservation();
     }
 
     public function saveReservation() {

@@ -44,7 +44,6 @@ class DBService
 
   public function getFerry(String $startingDoc, String $destinationDoc)
   {
-    //$ferry = $this->em->getRepository(Ferry::class)->findOneBy(array('startingDoc' => $startingDoc, 'destinationDoc' => $destinationDoc));
       $ferry = $this->em->getRepository(Ferry::class)->findBy(array('startingDoc' => $startingDoc, 'destinationDoc' => $destinationDoc));
 
     return $ferry;
@@ -61,8 +60,8 @@ class DBService
     }
 
     public function getCustomer(string $email){
-        $availableInDB = $this->em->getRepository(Customer::class)->findBy(array('email' => $email));
-        if(count($availableInDB) > 0)
+        $availableInDB = $this->em->getRepository(Customer::class)->findOneBy(array('email' => $email));
+        if($availableInDB)
         {
             return $availableInDB;
         }
