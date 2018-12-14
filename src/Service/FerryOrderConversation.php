@@ -26,7 +26,6 @@ class FerryOrderConversation extends Conversation
     {
         $this->startingQuestion();
     }
-
     public function startingQuestion()
     {
         $question = Question::create('Would you like to make a reservation?')
@@ -48,34 +47,46 @@ class FerryOrderConversation extends Conversation
 
     public function askStartingDoc()
     {
-        //instead lets have buttons with availabe FROM places
+        $buttons = [];
 
-        $question = Question::create('From what doc would you like to book a ferry?');
+        $tempFerries = $this->getContainer()->get(DBService::class)->getAllStartingDocs();
+
+        foreach ($tempFerries as $key=>$ferry)
+        {
+            $buttons[] = Button::create($ferry->getStartingDoc())->value($ferry->getStartingDoc());
+        }
+
+        $question = Question::create('Here are available starting docs. Chose one:')
+            ->callbackId('select_startingDoc')
+            ->addButtons($buttons);
 
         $this->ask($question, function (Answer $answer) {
-            $exists = $this->getContainer()->get(DBService::class)->isExistingDoc($answer->getText());
-            if ($exists) {
-                $this->startingDoc = $answer->getText();
+            if ($answer->isInteractiveMessageReply()) {
+                $this->startingDoc = $answer->getValue();
                 $this->askDestinationDoc();
-            } else {
-                $this->repeat('Sorry no ferries from selected location exists. Please try again.');
             }
         });
     }
 
     public function askDestinationDoc()
     {
-        //instead lets have buttons with availabe FROM places
+        $buttons = [];
 
-        $question = Question::create('What is your destination?');
+        $tempFerries = $this->getContainer()->get(DBService::class)->getAllDestinationDocs();
+
+        foreach ($tempFerries as $key=>$ferry)
+        {
+            $buttons[] = Button::create($ferry->getDestinationDoc())->value($ferry->getDestinationDoc());
+        }
+
+        $question = Question::create('Here are available destinations. Chose one:')
+            ->callbackId('select_destinationDoc')
+            ->addButtons($buttons);
 
         $this->ask($question, function (Answer $answer) {
-            $exists = $this->getContainer()->get(DBService::class)->isExistingDestination($answer->getText());
-            if ($exists) {
-                $this->destinationDoc = $answer->getText();
+            if ($answer->isInteractiveMessageReply()) {
+                $this->destinationDoc = $answer->getValue();
                 $this->getAllFerries();
-            } else {
-                $this->repeat('Sorry no ferries to selected location exists. Please try again.');
             }
         });
     }

@@ -21,27 +21,6 @@ class DBService
         $this->em = $entityManager;
     }
 
-    public function isExistingDoc(String $startingDoc)
-    {
-        $availableInDB = $this->em->getRepository(Ferry::class)->findBy(array('startingDoc' => $startingDoc));
-        if(count($availableInDB) > 0)
-        {
-            return true;
-        }
-        return false;
-    }
-
-
-    public function isExistingDestination(String $destinationDoc)
-    {
-        $availableInDB = $this->em->getRepository(Ferry::class)->findBy(array('destinationDoc' => $destinationDoc));
-        if(count($availableInDB) > 0)
-        {
-            return true;
-        }
-        return false;
-    }
-
     public function getFerries(String $startingDoc, String $destinationDoc)
     {
         $ferry = $this->em->getRepository(Ferry::class)->findBy(array('startingDoc' => $startingDoc, 'destinationDoc' => $destinationDoc));
@@ -49,18 +28,19 @@ class DBService
         return $ferry;
     }
 
-    public function getAllFerries()
+    public function getAllStartingDocs()
     {
-        return $this->em->getRepository(Ferry::class)->findAll();
+        $query = $this->em->createQuery('SELECT f FROM App\Entity\Ferry f GROUP BY f.startingDoc');
+        //$query = $this->em->createQuery('SELECT DISTINCT f.startingDoc FROM App\Entity\Ferry f WHERE f.startingDoc = :thisDoc')->setParameter('thisDoc', 'Klaipeda');
+
+        return $query->getResult();
+
     }
 
-    /**
-     * @param String $destination
-     * @return null|object
-     */
-    public function getDestination(String $destination)
+    public function getAllDestinationDocs()
     {
-        return $this->em->getRepository(Ferry::class)->findOneBy(array('$startingDoc' => $destination ));
+        $query = $this->em->createQuery('SELECT f FROM App\Entity\Ferry f GROUP BY f.destinationDoc');
+        return $query->getResult();
     }
 
     public function getCustomer(string $email){
