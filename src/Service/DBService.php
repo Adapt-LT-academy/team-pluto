@@ -42,13 +42,17 @@ class DBService
         return false;
     }
 
-  public function getFerry(String $startingDoc, String $destinationDoc)
-  {
-      $ferry = $this->em->getRepository(Ferry::class)->findBy(array('startingDoc' => $startingDoc, 'destinationDoc' => $destinationDoc));
+    public function getFerries(String $startingDoc, String $destinationDoc)
+    {
+        $ferry = $this->em->getRepository(Ferry::class)->findBy(array('startingDoc' => $startingDoc, 'destinationDoc' => $destinationDoc));
 
-    return $ferry;
+        return $ferry;
+    }
 
-  }
+    public function getAllFerries()
+    {
+        return $this->em->getRepository(Ferry::class)->findAll();
+    }
 
     /**
      * @param String $destination
