@@ -12,10 +12,6 @@ class FerryOrderConversation extends Conversation
 {
     use ContainerAwareConversationTrait;
 
-    /*
-     * TODO check how many spaces are left free
-     */
-
     protected $ferries;
 
     protected $startingDoc;
