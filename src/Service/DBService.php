@@ -43,18 +43,53 @@ class DBService
         return $query->getResult();
     }
 
-    public function getCustomer(string $email){
+    //select all reservations where ferry id = givenID
+    public function getReservation($id)
+    {
+        $query = $this->em->createQuery('SELECT r FROM App\Entity\Reservation r WHERE r.ferry = :givenID')->setParameter('givenID', $id);
+
+        return $query->getResult();
+    }
+
+    public function getCustomer(string $email)
+    {
         $availableInDB = $this->em->getRepository(Customer::class)->findOneBy(array('email' => $email));
-        if($availableInDB)
-        {
+
+        if($availableInDB){
             return $availableInDB;
         }
         return null;
     }
 
-    public function saveReservation(Reservation $reservation) {
-      $this->em->persist($reservation);
-      $this->em->flush();
+    public function getCustomerByID($id)
+    {
+        $availableInDB = $this->em->getRepository(Customer::class)->findOneBy(array('id' => $id));
+
+        if($availableInDB){
+            return $availableInDB;
+        }
+        return null;
     }
+    public function getFerryByID($id)
+    {
+        $availableInDB = $this->em->getRepository(Ferry::class)->findOneBy(array('id' => $id));
+
+        if($availableInDB){
+            return $availableInDB;
+        }
+        return null;
+    }
+
+    public function saveReservation(Reservation $reservation, $customerID, $ferryID) {
+        $reservation->setCustomers($this->getCustomer($customerID));
+        $reservation->setFerry($this->getFerryByID($ferryID));
+        $this->em->persist($reservation);
+        $this->em->flush();
+    }
+    public function saveCustomerToDB(Customer $customer) {
+        $this->em->persist($customer);
+        $this->em->flush();
+    }
+
 
 }

@@ -132,7 +132,7 @@ class Reservation
 
         $total = $this->getVehicles() * $this->getFerry()->getPricePerVehicle();
         //adding one as the buyer is counter in as well
-        $total += ($this->getPassengers() + 1) * $this->getFerry()->getPricePerPassenger();
+        $total += $this->getPassengers() * $this->getFerry()->getPricePerPassenger();
 
 
         $this->setTotal($total);

@@ -22,9 +22,13 @@ class FerryOrderConversation extends Conversation
 
     protected $destinationDoc;
 
+    protected $vechile;
+
+    protected $passengers;
+
     public function run()
     {
-        $this->startingQuestion();
+       $this->startingQuestion();
     }
     public function startingQuestion()
     {
@@ -95,7 +99,44 @@ class FerryOrderConversation extends Conversation
     {
         $this->ferries = $this->getContainer()->get(DBService::class)->getFerries($this->startingDoc, $this->destinationDoc);
 
-        $this->askDate();
+        $this->askPassenger();
+    }
+
+    public function askPassenger()
+    {
+        $question = Question::create('How many passengers will you take with yourself?')
+            ->callbackId('select_passengers')
+            ->addButtons([
+                Button::create('Travel alone')->value('1'),
+                Button::create('1')->value('2'),
+                Button::create('2')->value('3'),
+                Button::create('3')->value('4'),
+                Button::create('4')->value('5'),
+            ]);
+
+        $this->ask($question, function (Answer $answer) {
+            if ($answer->isInteractiveMessageReply()) {
+                $this->passengers = $answer->getValue();
+                $this->askVehicle();
+            }
+        });
+    }
+
+    public function askVehicle()
+    {
+        $question = Question::create('Will you take your car?')
+            ->callbackId('select_vehicles')
+            ->addButtons([
+                Button::create('Yes')->value('1'),
+                Button::create('No')->value('0'),
+            ]);
+
+        $this->ask($question, function (Answer $answer) {
+            if ($answer->isInteractiveMessageReply()) {
+                $this->vechile = $answer->getValue();
+                $this->askDate();
+            }
+        });
     }
 
     public function askDate()
@@ -103,7 +144,7 @@ class FerryOrderConversation extends Conversation
         $buttons = [];
 
        foreach ($this->ferries as $key=>$ferry) {
-            $buttons[] = Button::create($ferry->getDate()->format('M d H:i'))->value($key);
+            $buttons[] = Button::create($ferry->getDate()->format('M d H:i') . ' 🚘 ' . $this->freeSpacesOnFerryForVehicles($ferry) . ' 👨‍✈️ ' . $this->freeSpacesOnFerryForPassengers($ferry))->value($key);
         }
 
         $question = Question::create('Here are available dates. Chose one:')
@@ -112,11 +153,51 @@ class FerryOrderConversation extends Conversation
 
         $this->ask($question, function (Answer $answer) {
             if ($answer->isInteractiveMessageReply()) {
-                $this->say('To finish reservation we will need few more details.');
-
-                $this->bot->startConversation(new CustomerService($this->ferries[$answer->getText()]));
+                if($this->freeSpacesOnFerryForVehicles($this->ferries[$answer->getText()]) >= $this->vechile)
+                {
+                    if($this->freeSpacesOnFerryForPassengers($this->ferries[$answer->getText()]) >= $this->passengers)
+                    {
+                        $this->say('To finish reservation we will need few more details.');
+                        $this->bot->startConversation(new CustomerService($this->ferries[$answer->getText()], $this->passengers, $this->vechile));
+                    }
+                    else
+                    {
+                        $this->say('Sorry but there is not enough space for to passengers on the Ferry. Please chose a different date');
+                        $this->askDate();
+                    }
+                }
+                else
+                    {
+                        $this->say('Sorry but there is not enough space for your car on selected Ferry. Please chose a different date');
+                        $this->askDate();
+                    }
             }
         });
     }
+
+    public function freeSpacesOnFerryForPassengers($ferry)
+    {
+        $tempReservations = $this->getContainer()->get(DBService::class)->getReservation($ferry->getId());
+
+        $takenSpots = 0;
+        foreach ($tempReservations as $reservation)
+        {
+            $takenSpots += $reservation->getPassengers();
+        }
+        return $ferry->getMaxPassengers() - $takenSpots;
+    }
+
+    public function freeSpacesOnFerryForVehicles($ferry)
+    {
+        $tempReservations = $this->getContainer()->get(DBService::class)->getReservation($ferry->getId());
+
+        $takenSpots = 0;
+        foreach ($tempReservations as $reservation)
+        {
+            $takenSpots += $reservation->getVehicles();
+        }
+        return $ferry->getMaxVehicles() - $takenSpots;
+    }
+
 
 }
