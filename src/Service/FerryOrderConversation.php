@@ -18,7 +18,7 @@ class FerryOrderConversation extends Conversation
 
     protected $destinationDoc;
 
-    protected $vechile;
+    protected $vehicle;
 
     protected $passengers;
 
@@ -129,7 +129,7 @@ class FerryOrderConversation extends Conversation
 
         $this->ask($question, function (Answer $answer) {
             if ($answer->isInteractiveMessageReply()) {
-                $this->vechile = $answer->getValue();
+                $this->vehicle = $answer->getValue();
                 $this->askDate();
             }
         });
@@ -149,12 +149,12 @@ class FerryOrderConversation extends Conversation
 
         $this->ask($question, function (Answer $answer) {
             if ($answer->isInteractiveMessageReply()) {
-                if($this->freeSpacesOnFerryForVehicles($this->ferries[$answer->getText()]) >= $this->vechile)
+                if($this->freeSpacesOnFerryForVehicles($this->ferries[$answer->getText()]) >= $this->vehicle)
                 {
                     if($this->freeSpacesOnFerryForPassengers($this->ferries[$answer->getText()]) >= $this->passengers)
                     {
                         $this->say('To finish reservation we will need few more details.');
-                        $this->bot->startConversation(new CustomerService($this->ferries[$answer->getText()], $this->passengers, $this->vechile));
+                        $this->bot->startConversation(new CustomerService($this->ferries[$answer->getText()], $this->passengers, $this->vehicle));
                     }
                     else
                     {

@@ -81,7 +81,7 @@ class CustomerService extends Conversation
     {
         $this->ask('What is your surname?', function(Answer $answer) {
             $this->customer->setLastname($answer->getText());
-            $this->getContainer()->get(DBService::class)->saveCustomerToDB()($this->customer);
+            $this->getContainer()->get(DBService::class)->saveCustomerToDB($this->customer);
             $this->continueToReservation();
         });
     }

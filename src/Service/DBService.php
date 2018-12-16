@@ -61,35 +61,21 @@ class DBService
         return null;
     }
 
-    public function getCustomerByID($id)
-    {
-        $availableInDB = $this->em->getRepository(Customer::class)->findOneBy(array('id' => $id));
-
-        if($availableInDB){
-            return $availableInDB;
-        }
-        return null;
-    }
-    public function getFerryByID($id)
-    {
-        $availableInDB = $this->em->getRepository(Ferry::class)->findOneBy(array('id' => $id));
-
-        if($availableInDB){
-            return $availableInDB;
-        }
-        return null;
-    }
-
     public function saveReservation(Reservation $reservation, $customerID, $ferryID) {
-        $reservation->setCustomers($this->getCustomer($customerID));
-        $reservation->setFerry($this->getFerryByID($ferryID));
+
+        $ferry = $this->em->getReference('App\Entity\Ferry', $ferryID);
+        $reservation->setFerry($ferry);
+
+        $customer = $this->em->getReference('App\Entity\Customer', $customerID);
+        $reservation->setCustomers($customer);
+
         $this->em->persist($reservation);
         $this->em->flush();
     }
+
     public function saveCustomerToDB(Customer $customer) {
         $this->em->persist($customer);
         $this->em->flush();
     }
-
 
 }

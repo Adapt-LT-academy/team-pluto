@@ -35,12 +35,15 @@ class ReservationService extends Conversation
 
     public function __construct(Ferry $ferry, Customer $customer, int $passengers, int $vehicle)
     {
-        $this->reservation = new Reservation();
-        $this->reservation->setFerry($ferry);
-        $this->reservation->setPassengers($passengers);
-        $this->reservation->calculateTotal();
         $this->ferry = $ferry;
         $this->customer = $customer;
+
+        $this->reservation = new Reservation();
+        $this->reservation->setCustomers($this->customer);
+        $this->reservation->setFerry($this->ferry);
+        $this->reservation->setPassengers($passengers);
+        $this->reservation->setVehicles($vehicle);
+        $this->reservation->calculateTotal();
     }
 
     public function run()
@@ -99,6 +102,8 @@ class ReservationService extends Conversation
     public function finalizeReservation()
     {
         $this->getContainer()->get(DBService::class)->saveReservation($this->reservation, $this->customer->getId(), $this->ferry->getId());
+        $this->say('Your reservation was successful, have a nice day!');
+        return true;
     }
 }
 
