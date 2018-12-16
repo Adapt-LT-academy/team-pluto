@@ -57,7 +57,7 @@ class FerryOrderConversation extends Conversation
 
         foreach ($tempFerries as $key=>$ferry)
         {
-            $buttons[] = Button::create($ferry->getStartingDoc())->value($ferry->getStartingDoc());
+            $buttons[] = Button::create('⛴ ️'. $ferry->getStartingDoc())->value($ferry->getStartingDoc());
         }
 
         $question = Question::create('Here are available starting docs. Chose one:')
@@ -80,7 +80,7 @@ class FerryOrderConversation extends Conversation
 
         foreach ($tempFerries as $key=>$ferry)
         {
-            $buttons[] = Button::create($ferry->getDestinationDoc())->value($ferry->getDestinationDoc());
+            $buttons[] = Button::create('⛴ ️'. $ferry->getDestinationDoc())->value($ferry->getDestinationDoc());
         }
 
         $question = Question::create('Here are available destinations. Chose one:')
