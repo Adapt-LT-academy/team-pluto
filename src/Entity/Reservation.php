@@ -129,10 +129,15 @@ class Reservation
 
     public function calculateTotal() {
         $total = 0;
-        $total = $this->getPassengers() * $this->getFerry()->getPricePerPassenger();
-        $total += $this->vehicles * $this->getFerry()->getPricePerVehicle();
+
+        $total = $this->getVehicles() * $this->getFerry()->getPricePerVehicle();
+        //adding one as the buyer is counter in as well
+        $total += $this->getPassengers() * $this->getFerry()->getPricePerPassenger();
+
 
         $this->setTotal($total);
+
+        return $total;
     }
 
 
