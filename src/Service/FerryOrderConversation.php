@@ -40,7 +40,9 @@ class FerryOrderConversation extends Conversation
             if ($answer->isInteractiveMessageReply()) {
                 if($answer->getValue() == 'yes'){
                     $this->askStartingDoc();
-                }
+                }else{
+                    $this->say('Your reservation was canceled. Have a nice day!');
+                    return true;}
             }
         });
     }

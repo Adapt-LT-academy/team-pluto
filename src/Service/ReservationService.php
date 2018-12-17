@@ -67,7 +67,7 @@ class ReservationService extends Conversation
         $message .= 'Name: ' . $this->customer->getName() . '<br>';
         $message .= 'Lastname: ' . $this->customer->getLastname() . '<br>';
         $message .= 'Email: ' . $this->customer->getEmail() . '<br>';
-        $message .= 'Passengers: ' . ($this->reservation->getPassengers()-1) . '<br>';
+        $message .= 'Passengers: ' . ($this->reservation->getPassengers()) . '<br>';
         if ($this->reservation->getVehicles() == 1) {
             $message .= 'Vehicles: Yes<br>';
         } else {
@@ -94,7 +94,9 @@ class ReservationService extends Conversation
             if ($answer->isInteractiveMessageReply()) {
                 if ($answer->getValue() == 'yes') {
                     $this->finalizeReservation();
-                }
+                }else{
+                    $this->say('Your reservation was canceled. Have a nice day!');
+                    return true;}
             }
         });
     }
